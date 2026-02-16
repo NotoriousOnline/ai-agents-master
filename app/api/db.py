@@ -4,7 +4,7 @@ from fastapi import APIRouter, HTTPException
 
 from sqlalchemy import text
 
-from app.db.session import engine
+from app.db.session import get_engine
 
 router = APIRouter(tags=["db"])
 
@@ -16,7 +16,7 @@ async def db_ping() -> dict[str, str]:
     Use for readiness probes or to verify LOCAL_DB_URL / SUPABASE_DB_URL connectivity.
     """
     try:
-        async with engine.connect() as conn:
+        async with get_engine().connect() as conn:
             await conn.execute(text("SELECT 1"))
         return {"status": "ok", "database": "connected"}
     except Exception as e:

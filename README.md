@@ -14,8 +14,54 @@ Production-grade monorepo for multiple AI agents: **Python 3.11+**, **FastAPI**,
 ## Requirements
 
 - Python 3.11+
-- [Poetry](https://python-poetry.org/docs/#installation)
+- [Poetry](https://python-poetry.org/docs/#installation) (optional; you can use pip + venv)
 - Docker & Docker Compose (optional, for local Postgres)
+
+---
+
+## Setting up Python
+
+The project expects **Python 3.11+**. A `.python-version` file is included (used by pyenv and some IDEs).
+
+### Option A: Setup script (recommended)
+
+From the repo root:
+
+**Windows (PowerShell):**
+```powershell
+.\scripts\setup.ps1
+```
+Then activate and run:
+```powershell
+.\.venv\Scripts\Activate.ps1
+.\.venv\Scripts\python.exe -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+```
+
+**macOS / Linux:**
+```bash
+chmod +x scripts/setup.sh
+./scripts/setup.sh
+source .venv/bin/activate
+python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+```
+
+The script creates a `.venv`, installs from `requirements.txt`, and installs the app in editable mode.
+
+### Option B: Manual
+
+1. Install Python 3.11+ from [python.org](https://www.python.org/downloads/) (or `pyenv install 3.11`).
+2. From the repo root:
+   ```bash
+   python -m venv .venv
+   .venv\Scripts\Activate.ps1   # Windows
+   # or: source .venv/bin/activate  # macOS/Linux
+   pip install -r requirements.txt
+   pip install -e .
+   ```
+
+### Option C: Poetry
+
+If you use [Poetry](https://python-poetry.org/docs/#installation), run `poetry install` and then `poetry run uvicorn app.main:app --reload --host 0.0.0.0 --port 8000`.
 
 ---
 
@@ -106,6 +152,15 @@ ALEMBIC_SUPABASE_DB_URL=postgresql://postgres.[ref]:YOUR_PASSWORD@aws-0-xx.poole
 
 The app and Alembic both use the **Supabase** URL when `SUPABASE_DB_URL` / `ALEMBIC_SUPABASE_DB_URL` are set; otherwise they use the Local URL. SSL is enabled automatically for Supabase connections.
 
+### If Supabase DB is not connecting
+
+1. **Use the correct variable name** — In your **`.env`** (not just in comments), you must set **`SUPABASE_DB_URL=...`**. A raw URL on its own line (with no variable name) is ignored.
+2. **Use the async driver** — The app needs **`postgresql+asyncpg://`** at the start of the URL, not `postgresql://`.
+3. **URL-encode the password** — If your database password contains `#`, `$`, `!`, `%`, or `@`, encode them (e.g. `$` → `%24`, `!` → `%21`) in the URL so the connection string parses correctly.
+4. **Direct vs pooler** — Direct: `db.PROJECT_REF.supabase.co:5432`. Pooler: `aws-0-REGION.pooler.supabase.com:6543` with user `postgres.PROJECT_REF`. Both require SSL (the app turns it on automatically when `SUPABASE_DB_URL` is set).
+
+After editing `.env`, restart the app and try `GET /db/ping`.
+
 ### DB connectivity check: `GET /db/ping`
 
 A lightweight connectivity check runs `SELECT 1` against the **resolved** database (Supabase or Local):
@@ -165,8 +220,13 @@ To run migrations against **local** only, unset or comment out `ALEMBIC_SUPABASE
 ├── scripts/
 ├── docker-compose.yml
 ├── pyproject.toml
+├── requirements.txt
+├── .python-version       # Python 3.11 (pyenv / IDE)
 ├── .env.example
 ├── Makefile
+├── scripts/
+│   ├── setup.ps1         # Windows: create .venv + install deps
+│   └── setup.sh           # macOS/Linux: same
 └── README.md
 ```
 

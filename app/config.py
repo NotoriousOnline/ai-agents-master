@@ -1,17 +1,21 @@
 """Pydantic settings loaded from environment variables."""
 
 from functools import lru_cache
+from pathlib import Path
 from typing import Literal
 
 from pydantic import computed_field
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+# .env next to project root (parent of app/) so it loads regardless of cwd
+_env_path = Path(__file__).resolve().parent.parent / ".env"
 
 
 class Settings(BaseSettings):
     """Application settings. Loaded from env and .env file."""
 
     model_config = SettingsConfigDict(
-        env_file=".env",
+        env_file=_env_path if _env_path.exists() else ".env",
         env_file_encoding="utf-8",
         case_sensitive=False,
         extra="ignore",
@@ -46,6 +50,9 @@ class Settings(BaseSettings):
     # Optional Supabase API (Auth, Storage, etc.)
     supabase_url: str | None = None
     supabase_service_key: str | None = None
+
+    # OpenAI / ChatGPT (set OPENAI_API_KEY in .env; never commit the key)
+    openai_api_key: str | None = None
 
 
 @lru_cache

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Agents Master — Working Environment</title>
+  <style>
+    :root { --bg: #0f1419; --card: #1a2332; --text: #e6edf3; --muted: #8b949e; --accent: #58a6ff; --border: #30363d; }
+    * { box-sizing: border-box; }
+    body { font-family: 'Segoe UI', system-ui, sans-serif; margin: 0; padding: 2rem; background: var(--bg); color: var(--text); line-height: 1.6; min-height: 100vh; }
+    .container { max-width: 720px; margin: 0 auto; }
+    h1 { font-size: 1.75rem; font-weight: 600; margin-bottom: 0.25rem; }
+    .subtitle { color: var(--muted); font-size: 1rem; margin-bottom: 2rem; }
+    section { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 1.25rem 1.5rem; margin-bottom: 1.25rem; }
+    section h2 { font-size: 1rem; font-weight: 600; margin: 0 0 0.75rem 0; color: var(--accent); }
+    ul { margin: 0; padding-left: 1.25rem; }
+    li { margin-bottom: 0.35rem; }
+    .tools { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 0.5rem; list-style: none; padding-left: 0; }
+    .tools li { background: var(--bg); padding: 0.5rem 0.75rem; border-radius: 6px; font-size: 0.9rem; margin: 0; }
+    .steps { counter-reset: step; }
+    .steps li { list-style: none; padding-left: 2rem; position: relative; margin-bottom: 0.75rem; }
+    .steps li::before { counter-increment: step; content: counter(step); position: absolute; left: 0; width: 1.25rem; height: 1.25rem; background: var(--accent); color: var(--bg); border-radius: 50%; font-size: 0.75rem; font-weight: 600; display: flex; align-items: center; justify-content: center; }
+    .links { margin-top: 1.5rem; display: flex; flex-wrap: wrap; gap: 0.75rem; }
+    .links a { color: var(--accent); text-decoration: none; font-size: 0.9rem; }
+    .links a:hover { text-decoration: underline; }
+    code { background: var(--bg); padding: 0.15rem 0.4rem; border-radius: 4px; font-size: 0.85em; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>AI Agents Master</h1>
+    <p class="subtitle">Master working environment for building and running AI agents</p>
+
+    <section>
+      <h2>About this environment</h2>
+      <p>This project is a production-ready stack for multiple AI agents: FastAPI, async Postgres (local or Supabase), and Alembic migrations. Each agent lives under <code>app/agents/&lt;name&gt;/</code> with its own router, service, and schemas.</p>
+    </section>
+
+    <section>
+      <h2>Tools installed in this project</h2>
+      <ul class="tools">
+        <li>FastAPI</li>
+        <li>Uvicorn</li>
+        <li>Pydantic</li>
+        <li>Pydantic-Settings</li>
+        <li>SQLAlchemy (async)</li>
+        <li>AsyncPG</li>
+        <li>Supabase (Postgres)</li>
+        <li>ChatGPT (OpenAI)</li>
+        <li>Alembic</li>
+        <li>Python-dotenv</li>
+        <li>Pytest</li>
+        <li>Pytest-asyncio</li>
+        <li>HTTPX</li>
+        <li>Ruff</li>
+        <li>Black</li>
+        <li>Pre-commit</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>How to start creating a specific agent</h2>
+      <ol class="steps">
+        <li><strong>Create a folder</strong> under <code>app/agents/&lt;agent_name&gt;/</code> (e.g. <code>app/agents/my_agent/</code>).</li>
+        <li><strong>Add modules</strong>: <code>__init__.py</code>, <code>router.py</code> (FastAPI routes), <code>service.py</code> (business logic), and <code>schemas.py</code> (Pydantic request/response models).</li>
+        <li><strong>Register the router</strong> in <code>app/api/v1/router.py</code>: include your agent’s router with a prefix like <code>/agents/&lt;agent_name&gt;</code>.</li>
+        <li><strong>Implement the agent</strong> in the service layer (calls to LLMs, tools, or DB as needed). Keep the router thin and delegate to the service.</li>
+        <li><strong>Run the API</strong> with <code>uvicorn app.main:app --reload</code> and call your agent via the new routes (e.g. <code>POST /api/v1/agents/my_agent/run</code>).</li>
+      </ol>
+      <p style="margin-top: 1rem; margin-bottom: 0; color: var(--muted); font-size: 0.9rem;">Use the existing <code>app/agents/example/</code> agent as a template: copy its structure and adapt router, schemas, and service for your use case.</p>
+    </section>
+
+    <div class="links">
+      <a href="/docs">API Docs (Swagger)</a>
+      <a href="/redoc">ReDoc</a>
+      <a href="/health">Health</a>
+      <a href="/version">Version</a>
+      <a href="/db/ping">DB Ping</a>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,8 +1,10 @@
 """FastAPI application entry point."""
 
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 from fastapi import FastAPI
+from fastapi.responses import HTMLResponse
 
 from app.api.db import router as db_router
 from app.api.v1.router import api_router
@@ -29,8 +31,15 @@ def create_application() -> FastAPI:
     )
     app.include_router(api_router, prefix=settings.api_v1_prefix)
     app.include_router(db_router, prefix="/db")
-    # Root-level health/version for probes and simplicity
+    # Root-level routes: homepage + health/version
     from app.api.v1.health import health_check, version as version_endpoint
+    _static_dir = Path(__file__).resolve().parent / "static"
+    _index_path = _static_dir / "index.html"
+
+    async def root() -> HTMLResponse:
+        html = _index_path.read_text(encoding="utf-8")
+        return HTMLResponse(content=html)
+    app.get("/", response_class=HTMLResponse)(root)
     app.get("/health")(health_check)
     app.get("/version")(version_endpoint)
     return app
