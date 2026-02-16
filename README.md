@@ -2,6 +2,8 @@
 
 Production-grade monorepo for building and running multiple AI agents: **Python 3.11+**, **FastAPI**, **Supabase/Postgres**, **OpenAI (ChatGPT)**, **Alembic**. Use **Poetry** or **pip + venv**.
 
+**Live preview:** [https://ai-agents-master-production.up.railway.app/](https://ai-agents-master-production.up.railway.app/)
+
 ## Features
 
 - **FastAPI** API layer with health, version, and **homepage** at `/` (tools list + how to create agents)
