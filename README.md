@@ -204,6 +204,25 @@ If the key is missing, `chatgpt_complete` returns a short “not configured” m
 
 ---
 
+## Deploying on Railway
+
+The repo includes **Railway** config so the app binds to Railway's `PORT` and starts correctly.
+
+1. **Connect the repo** to Railway (GitHub or CLI). Railway will use **Nixpacks** and install from `requirements.txt`; the start command is set in `railway.json`:  
+   `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
+
+2. **Set environment variables** in the Railway service (Variables tab). There is no `.env` in the deployment; everything comes from Railway's env:
+   - **Required for DB:** `SUPABASE_DB_URL` (async URL: `postgresql+asyncpg://...`) and `ALEMBIC_SUPABASE_DB_URL` (sync URL with `?sslmode=require`). Use the **pooler** URL (port 6543) to avoid `getaddrinfo` issues.
+   - **Optional:** `OPENAI_API_KEY` (for ChatGPT), `SUPABASE_URL`, `SUPABASE_SERVICE_KEY`.
+
+3. **Public URL:** In the service → **Networking** → **Generate Domain**.
+
+4. If you see **"Application failed to respond"**, open the **Deploy** tab and check the **logs** for:
+   - Crash on startup (e.g. missing `SUPABASE_DB_URL` or import error).
+   - Wrong port: the start command must use `$PORT` (Railway injects it). The provided `railway.json` and `Procfile` already do this.
+
+---
+
 ## Tools for building AI agents
 
 | Tool | Where it helps |
